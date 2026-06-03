@@ -721,6 +721,7 @@ class StringVar(Var[STRING_TYPE], python_types=str):
         Returns:
             The string strip operation.
         """
+        print("HAH!")
         if chars is not None and not isinstance(chars, (StringVar, str)):
             raise_unsupported_operand_types("strip", (type(self), type(chars)))
 
@@ -1014,8 +1015,9 @@ def string_strip_operation(
     if str(chars) == "null":
         return var_operation_return(js_expression=f"{string}.trim()", var_type=str)
 
+    chars = re.escape(re.escape(str(chars)))
     return var_operation_return(
-        js_expression=f"{string}.replace(/^[{chars}]+|[{chars}]+$/g, '')",
+        js_expression=f"{string}.replace(new RegExp(`^[${{{chars}}}]+|[${{{chars}}}]+$`, 'g'), '')",
         var_type=str,
     )
 
@@ -1029,8 +1031,9 @@ def string_lstrip_operation(
     if str(chars) == "null":
         return var_operation_return(js_expression=f"{string}.trimStart()", var_type=str)
 
+    chars = re.escape(str(chars))
     return var_operation_return(
-        js_expression=f"{string}.replace(/^[{chars}]+/, '')",
+        js_expression=f"{string}.replace(new RegExp(`^[${{{chars}}}]+`), '')",
         var_type=str,
     )
 
@@ -1044,8 +1047,9 @@ def string_rstrip_operation(
     if str(chars) == "null":
         return var_operation_return(js_expression=f"{string}.trimEnd()", var_type=str)
 
+    chars = re.escape(str(chars))
     return var_operation_return(
-        js_expression=f"{string}.replace(/[{chars}]+$/, '')",
+        js_expression=f"{string}.replace(new RegExp([${{{chars}}}]+$), '')",
         var_type=str,
     )
 
